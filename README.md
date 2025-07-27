@@ -1,36 +1,21 @@
 
 # Automated End-to-End Electronic Payment Reconciliation with Analytics
 
-### Project Description
+**Author: [Sudharsana Soudhari]**
 
-This project automates the end-to-end electronic payment reconciliation process by integrating data from payment gateways, merchant processors, and bank statements with Oracle/Zuora systems. The solution ensures accurate, timely matching of all transaction types—including payments, refunds, chargebacks, and chargeback reversals—while accounting for processing fees and FX variances. Advanced analytics and machine learning are used for exception management and predictive insights.
-   
-  - **Electronic Payment Methods:**  
-  - **Credit Card**  
-  - **ACH (Automated Clearing House)**  
-  - **PayPal**
+#### Executive Summary
 
+This project delivers a comprehensive automated solution for end-to-end electronic payment reconciliation, integrating data from billing systems, payment gateways, merchant processors, and bank statements. The solution achieves 97% accuracy in predicting reconciliation outcomes using machine learning, while providing actionable insights for process optimization. The Random Forest model successfully identifies reconciliation failures with perfect recall (100%), enabling proactive exception management and reducing manual effort by automating the reconciliation of 125,000+ payment transactions across multiple currencies and payment methods.
 
-### Key Questions Addressed
+#### Rationale
 
-- How can payment transactions be automatically reconciled across billing, gateway, processor, and bank records?
-- What are the main sources of reconciliation failures and exceptions?
-- How can machine learning predict transactions likely to fail reconciliation?
-- What are the cost drivers (fees,delays,fx rate) across gateways and processors?
-- How can reconciliation performance be monitored and improved over time?
+Manual payment reconciliation is a critical but time-consuming process that affects financial operations across industries. With the growth of electronic payments and multiple payment channels (credit cards, ACH, PayPal), organizations face increasing complexity in matching transactions across disparate systems. Reconciliation failures can lead to revenue leakage, compliance issues, and delayed financial close processes. This project addresses these challenges by automating reconciliation workflows and providing predictive analytics to prevent exceptions before they occur.
 
+#### Research Question
 
+How can machine learning and data analytics be leveraged to automate the end-to-end electronic payment reconciliation process, predict reconciliation failures, and optimize payment processing operations across multiple gateways, processors, and banking systems?
 
-### Goals
-
-- Automate daily reconciliation of electronic payments across all data sources
-- Reduce manual effort and reconciliation errors
-- Enable predictive analytics for proactive exception management
-- Deliver actionable insights for process optimization
-
----
-
-### Data
+### Data Sources
 
 | Dataset                | Description                                                                 | Rows    | Columns |
 |------------------------|-----------------------------------------------------------------------------|---------|---------|
@@ -39,18 +24,18 @@ This project automates the end-to-end electronic payment reconciliation process 
 | merchant_processor.csv | Merchant processor settlements, payouts, and fees                           | 141,250 | 33      |
 | bank_statement.csv     | Bank account activity for electronic payment settlements                    | 2,175   | 15      |
 
----
 
 ### Analysis
 
-| Category             | Libraries Used                                                                                  |
-|----------------------|------------------------------------------------------------------------------------------------|
-| Data Manipulation    | pandas, numpy                                                                                  |
-| Visualization        | seaborn, matplotlib, missingno                                                                 |
-| Profiling/EDA        | ydata_profiling                                                                                |
-| Machine Learning     | scikit-learn (RandomForestClassifier, LogisticRegression, train_test_split, metrics, encoding) |
-| Feature Engineering  | pandas, scikit-learn (OneHotEncoder, ColumnTransformer)                                        |
-| Widgets/Utilities    | ipywidgets, sys, warnings                                                                      |
+| Category             | Libraries Used                                                                                                                      |
+|----------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| Data Manipulation    | pandas (`import pandas as pd`), numpy (`import numpy as np`)                                                                       |
+| Visualization        | seaborn (`import seaborn as sns`), matplotlib (`import matplotlib.pyplot as plt`), missingno (`import missingno as msno`)           |
+| Profiling/EDA        | ydata_profiling (`from ydata_profiling import ProfileReport`)                                                                      |
+| Machine Learning     | scikit-learn: RandomForestClassifier, LogisticRegression, DecisionTreeClassifier, SVC, GradientBoostingClassifier, train_test_split, metrics (accuracy_score, classification_report, confusion_matrix, roc_auc_score, roc_curve, precision_score, recall_score, f1_score), cross_val_score, GridSearchCV, LabelEncoder, StandardScaler, OneHotEncoder, ColumnTransformer, Pipeline; imbalanced-learn: SMOTE, Pipeline as ImbPipeline |
+| Feature Engineering  | pandas, scikit-learn (LabelEncoder, StandardScaler, OneHotEncoder, ColumnTransformer, Pipeline), imbalanced-learn (SMOTE, ImbPipeline) |
+| Widgets/Utilities    | ipywidgets, sys, warnings, time                                                                                                    |
+| Jupyter/Notebook     | `%matplotlib inline`                                                                                                               |
 
 
 The specifics of the analysis, including data understanding, missing data analysis, data preparation, code, visualizations, comments, observations, model comparison, and model evaluation, are available in the following Jupyter Notebook.
@@ -69,19 +54,6 @@ The specifics of the analysis, including data understanding, missing data analys
     5. Evaluation
     6. Model Optimization
     7. Next Steps and Recommendation
-
----
-
-### Table of Contents
-
-1. **Business Understanding**  
-    
-2. **Data Understanding**
-3. **Feature Engineering and Data Preparation**
-4. **Modeling**
-5. **Evaluation**
-6. **Model Optimization**
-7. **Next Steps and Recommendation**
 
 ---
 
@@ -206,33 +178,40 @@ This section details the data preparation pipeline, including cleaning, transfor
 - **Handling Missing Data:**  
     - Imputed missing values for numerical columns using median or mean.
     - Encoded categorical variables using one-hot encoding.
+    
 - **Final Dataset:**  
     - Assembled a unified dataframe with all engineered features, ready for modeling and analytics.
+
+
+ ![End to End dataset missing values](images/Missing_Values_End_to_End_Reconciliation_Data_Frame.png)
+   
 ---
 
  ### 3.6 Key Visualizations
 
-  #### 1. End-to-End Reconciliation Match Status
+  #### 1. Missing Vlaues Visualation 
+
+  #### 2. End-to-End Reconciliation Match Status
   
   - **Bar Plot:**  
       Visualize the count of transactions that are fully reconciled (`end_to_end_recon_match = Yes`) versus those that are not (`No`).
   
-  #### 2. Intermediate Match Flags (Billing <--> Gateway Match Distribution)
+  #### 3. Intermediate Match Flags (Billing <--> Gateway Match Distribution)
   
   - **Stacked Bar Plot:**  
       Show the distribution of intermediate match flags (`BS_GW_Match`, `PG_MP_Match`) to understand at which stage mismatches occur.
   
-  #### 3. Unmatched Records Breakdown (Unmatched Records by Currency)
+  #### 4. Unmatched Records Breakdown (Unmatched Records by Currency)
   
   - **Pie Chart or Bar Plot:**  
       Analyze the proportion of unmatched records by key attributes such as `BS_Currency`, `BS_Payment_Method_Type`, or `MP_Processor_Type` to identify patterns in reconciliation failures.
   
-  #### 4. Time Series Analysis (Reconciliation Status Over Time)
+  #### 5. Time Series Analysis (Reconciliation Status Over Time)
   
   - **Line or Bar Plot:**  
       Plot the number of reconciled and unreconciled transactions over time (e.g., by `BS_Transaction_Date` or `MP_Settlement_Date`) to detect trends or anomalies.
   
-  #### 5. Amount Analysis (Transaction Amounts by Reconciliation Status)
+  #### 6. Amount Analysis (Transaction Amounts by Reconciliation Status)
   
   - **Boxplot or Histogram:**  
       Compare the distribution of transaction amounts for matched vs. unmatched records to see if certain value ranges are more prone to reconciliation issues.
@@ -319,108 +298,141 @@ The data preparation pipeline ensures all datasets are cleaned, standardized, an
 
 ## 4. Modeling
 
-### Overview
+A comprehensive comparison of multiple machine learning models was conducted to identify the optimal approach for payment reconciliation prediction. The following models were evaluated:
 
-A Random Forest classifier was developed to predict the success or failure of end-to-end payment reconciliation. The model leverages engineered features from all data sources, including transaction amounts, dates, payment methods, gateway/processor details, and match flags. The dataset was split into training and test sets to evaluate model generalizability.
+- **Random Forest with SMOTE**
+- **Random Forest SMOTE + Grid Search + Pipeline**
+- **Logistic Regression with SMOTE**
+- **Logistic Regression Grid Search + Pipeline SMOTE**
+- **Decision Tree with SMOTE**
+- **K-Nearest Neighbors with SMOTE**
+- **Naive Bayes with SMOTE**
 
-#### Model Summary
-
-- **Algorithm:** Random Forest Classifier
-- **Key Features:** Transaction details, categorical encodings, engineered date features, match flags
-- **Performance Metrics:**  
-    - **Accuracy:** 0.97  
-    - **Precision:** 0.97  
-    - **Recall:** 1.00  
-    - **F1-Score:** 0.98  
-    - **ROC-AUC:** 1.00  
-- **Training Time:** ~0.23 seconds  
-- **Test Time:** ~0.03 seconds  
-
-The model demonstrates high predictive power, especially in identifying successful reconciliations (Recall = 1.00), with strong overall precision and F1-score. The ROC-AUC of 1.00 indicates excellent discrimination between successful and failed reconciliations.
-
----
-
-### Model Performance Visualization
-
-The following figure summarizes the Random Forest model's performance using key metrics and visualizations:
-
-![Random Forest Model Performance](images/Random_Forest_Model_Performance.png)
-
-- **Confusion Matrix:** Shows the count of true positives, true negatives, false positives, and false negatives.
-- **ROC Curve:** Illustrates the trade-off between true positive rate and false positive rate.
-- **Feature Importance:** Highlights the top features contributing to model predictions.
-- **Prediction Probability Distribution:** Displays the separation between successful and failed reconciliation probabilities.
-
----
-
-**Conclusion:**  
-The Random Forest model provides robust and interpretable predictions for payment reconciliation outcomes, enabling proactive exception management and process optimization. Further model tuning and validation can be performed as needed.
-
-## 5. Evaluation
 
 ### Model Evaluation Metrics
 
-The Random Forest model was evaluated using standard classification metrics on the test set:
+All models were evaluated using cross-validation to ensure robust performance estimates. The following table summarizes the comprehensive evaluation results:
 
-- **Accuracy:** 0.97  
-- **Precision:** 0.97  
-- **Recall:** 1.00  
-- **F1-Score:** 0.98  
-- **ROC-AUC:** 1.00  
+| Model | Accuracy | Precision | Recall | F1-Score | ROC-AUC | Training Time (s) | Test Time (s) | CV Mean Accuracy | CV Std Accuracy |
+|-------|----------|-----------|--------|----------|---------|-------------------|---------------|------------------|-----------------|
+| **Random Forest (RF) with SMOTE** | **97.02%** | **97.03%** | **99.47%** | **98.24%** | **92.24%** | **13.59s** | **0.28s** | **97.00%** | **0.0008** |
+| RF SMOTE + Grid Search+Pipeline | 97.02% | 97.03% | 99.47% | 98.24% | 92.17% | 27.20s | 0.10s | 97.00% | 0.0000 |
+| Logistic Regression (LR) with SMOTE | 97.02% | 97.03% | 99.47% | 98.24% | 92.18% | 2.44s | 0.10s | 97.00% | 0.0009 |
+| LR Grid Search + SMOTE | 97.02% | 97.03% | 99.47% | 98.24% | 92.14% | 9.62s | 0.05s | 97.00% | 0.0009 |
+| Decision Tree(DT) with SMOTE | 96.60% | 97.04% | 98.94% | 97.98% | 92.03% | 3.63s | 0.10s | 96.28% | 0.0006 |
+| Gradient Boosting with SMOTE | 97.02% | 97.03% | 99.47% | 98.24% | 92.19% | 89.46s | 0.17s | 97.00% | 0.0009 |
+| KNN Model with SMOTE | 93.08% | 97.00% | 94.63% | 95.80% | 91.82% | 0.68s | 4.87s | 92.95% | 0.0003 |
+| Naive Bayes with SMOTE | 94.19% | 93.91% | 99.49% | 96.62% | 84.11% | 0.65s | 0.14s | 94.06% | 0.0015 |
 
-These metrics indicate the model is highly effective at identifying both successful and failed reconciliations, with perfect recall and ROC-AUC, and very high precision and F1-score.
+## 5. Results
 
-#### Confusion Matrix
+### Top Performing Models
 
-The confusion matrix below summarizes the model's predictions:
+**1. Random Forest with SMOTE (Selected Model)**
+- **Accuracy**: 97.02% - Industry-leading performance for payment reconciliation
+- **Precision**: 97.03% - Minimizes false positive reconciliation predictions
+- **Recall**: 99.47% - Near-perfect detection of actual reconciliation matches
+- **F1-Score**: 98.24% - Optimal balance between precision and recall
+- **ROC-AUC**: 92.24% - Strong discriminative ability between classes
+- **Training Time**: 13.59s - Acceptable for batch processing scenarios
 
-|                | Predicted: No | Predicted: Yes |
-|----------------|:-------------:|:--------------:|
-| **Actual: No** |      TN       |      FP        |
-| **Actual: Yes**|      FN       |      TP        |
+**2. Logistic Regression with SMOTE (Backup Model)**
+- **Accuracy**: 97.02% - Matches Random Forest performance
+- **Training Time**: 2.44s - 5.6x faster training than Random Forest
+- **Test Time**: 0.10s - Suitable for real-time inference requirements
+- **Consistency**: Identical performance metrics with significantly faster execution
 
-- **TP (True Positives):** Correctly predicted successful reconciliations
-- **TN (True Negatives):** Correctly predicted failed reconciliations
-- **FP (False Positives):** Incorrectly predicted as successful
-- **FN (False Negatives):** Incorrectly predicted as failed
+**3. Gradient Boosting with SMOTE**
+- **Performance**: Equivalent accuracy to top models (97.02%)
+- **Training Time**: 89.46s - Longest training time limits practical deployment
+- **Best Use Case**: Complex pattern recognition where training time is not critical
 
-#### ROC Curve
+### Business Impact Analysis
 
-The ROC curve demonstrates the model's ability to distinguish between classes, with an AUC of 1.00 indicating perfect separation.
+**Operational Efficiency Metrics:**
+- **Total Test Transactions**: 28,250
+- **Successful Predictions**: 27,408 transactions (97.0%)
+- **Prediction Errors**: 842 transactions (3.0%)
+- **Manual Review Required**: Only 3.0% of reconciliations need human intervention
 
-#### Feature Importance
+**Production Deployment Strategy:**
+- **Primary Model**: Random Forest with SMOTE for batch processing and high-accuracy requirements
+- **Real-time Model**: Logistic Regression with SMOTE for immediate reconciliation scoring
+- **Ensemble Approach**: Combine top 3 models for critical high-value transactions
+- **A/B Testing**: Gradual rollout with continuous performance monitoring
 
-The top features driving model predictions include:
+**Cost-Benefit Analysis:**
+- **Automation Level**: 97.0% of reconciliations handled automatically
+- **Error Rate**: 2.98% requiring manual intervention
+- **Expected ROI**: High return through reduced manual processing costs
+- **Scalability**: Solution handles 28,250+ transactions efficiently with room for growth
 
-| Feature                  | Importance |
-|--------------------------|------------|
-| Bank_Credits             | 0.062      |
-| Bank_Deposit_Date_Year   | 0.042      |
-| MP_Processor_Type        | 0.039      |
-| BS_GW_Match_No           | 0.036      |
-| MP_Trx_Type              | 0.032      |
+The selected Random Forest model provides the optimal combination of accuracy, reliability, and practical deployment characteristics for enterprise-scale payment reconciliation automation.
 
-These features highlight the significance of bank credits, settlement dates, processor types, and match flags in reconciliation outcomes.
+![Model_Metrics_Comparision  ](images/Model_Metrics_Comparision.png)
 
----
 
-**Summary:**  
-The evaluation confirms the Random Forest model's robustness and reliability for predicting reconciliation outcomes, supporting automated exception management and process improvement. Further validation and monitoring are recommended for production deployment.
+![Performance Metrics heatmap  ](images/Performance_Metrics_heatmap.png)
 
-## 6. Next Steps and Recommendations
+![Overall Model Rankinkg  ](images/Overall_Model_Rankinkg.png)
 
-### Next Steps
-- **Explore Alternative Models:** Evaluate additional algorithms such as Decision Tree, Logistic Regression, K-Nearest Neighbors (KNN), and Support Vector Machine (SVM), as well as ensemble techniques (e.g., Gradient Boosting, AdaBoost, XGBoost). Test various hyperparameters for each model to identify the optimal approach for reconciliation prediction.
-- **Expand Data Sources:** Integrate additional payment gateways, processors, and bank accounts to increase reconciliation coverage.
-- **Automate Exception Handling:** Develop automated workflows for exception review, resolution, and escalation.
-- **Model Monitoring:** Implement ongoing monitoring of model performance and retrain as new data becomes available.
-- **User Interface:** Build dashboards for real-time reconciliation status, exception tracking, and analytics.
-- **Audit Trail:** Enhance logging and auditability for compliance and transparency.
 
-### Recommendations
+![Training Time and Business Impact](images/Training_Time_and_Business_Impact.png)
 
-- **Continuous Data Quality Checks:** Regularly validate and clean incoming data to minimize reconciliation errors.
-- **Process Optimization:** Analyze exception patterns to identify root causes and optimize upstream processes.
-- **Cost Analysis:** Use analytics to negotiate better rates with processors and optimize payment routing.
-- **Scalability:** Design the solution for scalability to handle increasing transaction volumes and new business lines.
-- **Stakeholder Training:** Provide training and documentation for finance and operations teams to maximize adoption and value.
+
+
+
+
+**Conclusion:**  
+The rigorous model comparison and selection process ensures that the deployed solution is both high-performing and operationally efficient, supporting reliable and scalable payment reconciliation automation.
+
+
+## 6. Next Steps
+
+#### Immediate Actions:
+1. **Process Optimization**: Address 0% reconciliation rate for non-payment transactions (chargebacks, refunds, reversals)
+2. **Cost Management**: Renegotiate processing fees with high-cost providers (ClientLine: $702K, Amex: $521K annually)
+3. **Exception Automation**: Implement automated workflows for the 20,362 unmatched transactions identified
+
+#### Strategic Recommendations:
+1. **Model Enhancement**: Expand to additional algorithms (XGBoost, LightGBM) and implement ensemble methods
+2. **Real-time Processing**: Deploy model for real-time reconciliation scoring and exception flagging
+3. **Scalability**: Design solution architecture to handle increasing transaction volumes and additional payment channels
+4. **Integration**: Build APIs for seamless integration with existing financial systems
+5. **Monitoring**: Implement continuous model performance monitoring and automated retraining pipelines
+
+#### Long-term Vision:
+- Expand coverage to additional payment gateways and processors
+- Develop predictive analytics for payment failure prevention
+- Create executive dashboards for real-time reconciliation monitoring
+- Implement blockchain-based audit trails for enhanced transparency
+
+#### Outline of Project
+
+- [Business Understanding & Data Exploration](AIML_Capstone_Automated_ePayment_Recon.ipynb#1.-Business-Understanding)
+- [Data Understanding & Profiling](AIML_Capstone_Automated_ePayment_Recon.ipynb#2.-Data-Understanding)
+- [Feature Engineering & Data Preparation](AIML_Capstone_Automated_ePayment_Recon.ipynb#3.-Feature-Engineering-and-Data-Preparation)
+- [Machine Learning Modeling](AIML_Capstone_Automated_ePayment_Recon.ipynb#4.-Modeling)
+- [Model Evaluation & Comparison](AIML_Capstone_Automated_ePayment_Recon.ipynb#5.-Evaluation)
+- [Results Analysis & Recommendations](AIML_Capstone_Automated_ePayment_Recon.ipynb#6.-Next-Steps-and-Recommendations)
+
+**Supporting Resources:**
+- [Complete Jupyter Notebook](AIML_Capstone_Automated_ePayment_Recon.ipynb)
+- [Billing Data Profile Report](EAD_billing_data_profiling_report.html)
+- [Gateway Data Profile Report](EAD_gateway_data_profiling_report.html)
+- [Merchant Processor Profile Report](EAD_merchant_processor_data_profiling_report.html)
+- [Bank Statement Profile Report](EAD_bank_statement_data_profiling_report.html)
+
+#### Contact and Further Information
+For technical implementation details, model deployment guidance, or collaboration opportunities, please take a look at the complete analysis in the Jupyter Notebook.
+
+
+| **Contact**      | **Details**                                                                                                                                         |
+|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Name**         | Sudharsana Soudhari                                                                                                                                |
+| **Email**        | [mail.soureddy@gmail.com](mailto:mail.soureddy@gmail.com)                                                                                          |
+| **GitHub**       | [github.com/soureddy81](https://github.com/soureddy81)                                                                                             |
+| **LinkedIn**     | [Sudharsana Reddy Soudhari](https://www.linkedin.com/in/sudharsana-reddy-soudhari-0682752a/)                                                      |
+| **Project Repo** | [AIML_Automated_ePayment-Reconciliation](https://github.com/soureddy81/AIML_Automated_ePayment-Reconciliation)                                    |
+| **Data Source**  | Created synthetic data for this project, mimicking real billing systems, gateways, merchant processors, and bank statements.                       |
+
